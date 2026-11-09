@@ -1,0 +1,186 @@
+/**
+ * Portions Copyright (c) Jaewook Byun
+ * Modified interface
+ * <p>
+ * BSD 3-Clause License
+ * Copyright (c) 2009-Infinity, TinkerPop
+ * All rights reserved.
+ * <p>
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ * Redistributions of source code must retain the above copyright
+ * notice, this list of conditions and the following disclaimer.
+ * Redistributions in binary form must reproduce the above copyright
+ * notice, this list of conditions and the following disclaimer in the
+ * documentation and/or other materials provided with the distribution.
+ * Neither the name of the TinkerPop nor the
+ * names of its contributors may be used to endorse or promote products
+ * derived from this software without specific prior written permission.
+ * <p>
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL TINKERPOP BE LIABLE FOR ANY
+ * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+package com.tinkerpop.blueprints;
+
+import org.dfpl.chronograph.EdgeEvent;
+import org.dfpl.chronograph.Time;
+import org.dfpl.chronograph.Tokens.TimeComparator;
+
+import java.util.Collection;
+import java.util.NavigableSet;
+
+/**
+ * A Graph is a container object for a collection of vertices and a collection of edges.
+ *
+ * @author Marko A. Rodriguez (http://markorodriguez.com)
+ * @author Jaewook Byun, Ph.D., Assistant Professor, Department of Software,
+ *         Sejong University (slightly modify interface)
+ */
+public interface Graph {
+
+	/**
+	 * Create a new vertex, add it to the graph, and return the newly created
+	 * vertex. The provided object identifier is a recommendation for the identifier
+	 * to use. It is not required that the implementation use this identifier.
+	 *
+	 * @param id the recommended object identifier
+	 * @return the newly created vertex
+	 */
+    Vertex addVertex(String id);
+
+	/**
+	 * Return the vertex referenced by the provided object identifier. If no vertex
+	 * is referenced by that identifier, then return null.
+	 *
+	 * @param id the identifier of the vertex to retrieved from the graph
+	 * @return the vertex referenced by the provided identifier or null when no such
+	 *         vertex exists
+	 */
+    Vertex getVertex(String id);
+
+	/**
+	 * Remove the provided vertex from the graph. Upon removing the vertex, all the
+	 * edges by which the vertex is connected must be removed as well.
+	 *
+	 * @param vertex the vertex to remove from the graph
+	 */
+    void removeVertex(Vertex vertex);
+
+	/**
+	 * Return an iterable to all the vertices in the graph. If this is not possible
+	 * for the implementation, then an UnsupportedOperationException can be thrown.
+	 *
+	 * @return an iterable reference to all vertices in the graph
+	 */
+    Collection<Vertex> getVertices();
+
+	/**
+	 * Return an iterable to all the vertices in the graph that have a particular
+	 * key/value property. If this is not possible for the implementation, then an
+	 * UnsupportedOperationException can be thrown. The graph implementation should
+	 * use indexing structures to make this efficient else a full vertex-filter scan
+	 * is required.
+	 *
+	 * @param key   the key of vertex
+	 * @param value the value of the vertex
+	 * @return an iterable of vertices with provided key and value
+	 */
+    Collection<Vertex> getVertices(String key, Object value);
+
+	/**
+	 * Add an edge to the graph. The added edges requires a recommended identifier,
+	 * a tail vertex, an head vertex, and a label. Like adding a vertex, the
+	 * provided object identifier may be ignored by the implementation.
+	 *
+	 * @param outVertex the vertex on the tail of the edge
+	 * @param inVertex  the vertex on the head of the edge
+	 * @param label     the label associated with the edge
+	 * @return the newly created edge
+	 * 
+	 */
+    Edge addEdge(Vertex outVertex, Vertex inVertex, String label);
+
+	/**
+	 * Return the edge with the unique combination of out-going vertex, in-going
+	 * vertex, and label. If no edge is referenced by that identifier, then return
+	 * null.
+	 * 
+	 * @param outVertex out-going vertex
+	 * @param inVertex  in-going vertex
+	 * @param label     edge label
+	 * @return
+	 */
+    Edge getEdge(Vertex outVertex, Vertex inVertex, String label);
+
+	/**
+	 * Return the edge referenced by the provided object identifier. If no edge is
+	 * referenced by that identifier, then return null.
+	 *
+	 * @param id the identifier of the edge to retrieved from the graph
+	 * @return the edge referenced by the provided identifier or null when no such
+	 *         edge exists
+	 */
+    Edge getEdge(String id);
+
+	/**
+	 * Remove the provided edge from the graph.
+	 *
+	 * @param edge the edge to remove from the graph
+	 */
+    void removeEdge(Edge edge);
+
+	/**
+	 * Return an iterable to all the edges in the graph. If this is not possible for
+	 * the implementation, then an UnsupportedOperationException can be thrown.
+	 *
+	 * @return an iterable reference to all edges in the graph
+	 */
+    Collection<Edge> getEdges();
+
+	/**
+	 * Return an iterable to all the edges in the graph that have a particular
+	 * key/value property. If this is not possible for the implementation, then an
+	 * UnsupportedOperationException can be thrown. The graph implementation should
+	 * use indexing structures to make this efficient else a full edge-filter scan
+	 * is required.
+	 *
+	 * @param key   the key of the edge
+	 * @param value the value of the edge
+	 * @return an iterable of edges with provided key and value
+	 */
+    Collection<Edge> getEdges(String key, Object value);
+
+	/**
+	 * A shutdown function is required to properly close the graph. This is
+	 * important for implementations that utilize disk-based serializations.
+	 */
+    void shutdown();
+
+	/**
+	 * Return an iterable to all the edge events in the graph. If this is not
+	 * possible for the implementation.
+	 *
+	 * @return an iterable reference to all edge events in the graph
+	 */
+    Collection<EdgeEvent> getEdgeEvents();
+
+	/**
+	 * Return a navigable set of time existing in a graph
+	 * 
+	 * @return a navigable set of time existing in a graph
+	 */
+    NavigableSet<Time> getTimes(TimeComparator timeComparator, boolean scanVertexEvents, boolean scanEdgeEvents);
+	
+	/**
+	 * Clear the graph
+	 */
+    void clear();
+}
