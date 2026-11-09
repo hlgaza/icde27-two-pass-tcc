@@ -88,7 +88,7 @@ tar -xzvf bitcoin_alpha.tar.gz
 cd ../
 
 # Run the algorithm
-/usr/bin/time -v java -Xms16g -Xmx16g \
+/usr/bin/time -v java -Xmx16g \
    -Ddirected=true \
    -Dvertices=datasets/bitcoin_alpha/vertices.csv \
    -Dstream=datasets/bitcoin_alpha/graph.csv \
@@ -139,7 +139,7 @@ wget https://github.com/hlgaza/icde27-two-pass-tcc/releases/download/v1.0/bitcoi
 tar -xzvf bitcoin_alpha.tar.gz
 cd ../
 
-/usr/bin/time -v java -Xms16g -Xmx16g \
+/usr/bin/time -v java -Xmx16g \
    -Ddirected=true \
    -Dvertices=datasets/bitcoin_alpha/vertices.csv \
    -Dstream=datasets/bitcoin_alpha/graph.csv \
